@@ -110,7 +110,7 @@ Material:
     - _ZWrite: 1
     - __dirty: 1
     m_Colors:
-    - _Albedotintcolor: {r: 0.01886791, g: 0.01886791, b: 0.01886791, a: 1}
+    - _Albedotintcolor: {r: 0.0139999995, g: 0.0139999995, b: 0.0139999995, a: 1}
     - _Color: {r: 0.01886791, g: 0.01886791, b: 0.01886791, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _Emissiontintcolor: {r: 0, g: 0, b: 0, a: 1}
@@ -118,4 +118,4 @@ Material:
     - _Maintiling: {r: 1, g: 1, b: 0, a: 0}
     - _Noisespeed: {r: 0, g: 0, b: 0, a: 0}
     - _OutlineColor: {r: 0.18867922, g: 0.18867922, b: 0.18867922, a: 1}
-    - _Rimlightcolor: {r: 0.24550465, g: 0.22241011, b: 0.3207547, a: 1}
+    - _Rimlightcolor: {r: 0, g: 0, b: 0.3490566, a: 1}
