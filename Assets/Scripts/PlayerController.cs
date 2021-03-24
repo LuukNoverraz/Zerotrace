@@ -14,7 +14,6 @@ public class PlayerController : MonoBehaviour
     public float rotationSpeed = 30f;
     public float deadZoneDegrees = 15f;
 
-    private int keyCount = 0;
     private bool isGrounded = true;
 
     private Vector3 cameraDirection;
@@ -23,7 +22,7 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate()
     {
-        if(!Input.anyKeyDown)
+        if (!Input.anyKeyDown)
         {
             DisableParameters();
         }
@@ -41,19 +40,12 @@ public class PlayerController : MonoBehaviour
     }
 
     #region MovementStates;
-    void OnCollisionStay(Collision col)
-    {      
-        if (col.collider.gameObject.CompareTag("Ground"))
-        {
-            DisableParameters();
-            animator.SetBool("hasLanded", true);
-            isGrounded = true;
-        }
-    }
-    
+
     public void MovementStates()
     {
-        if (Input.GetKey(KeyCode.W) && !Input.GetKey(KeyCode.S))
+        Vector3 down = transform.TransformDirection(Vector3.down);
+        
+        if (Input.GetKey(KeyCode.W) && !Input.GetKey(KeyCode.S) && !Input.GetKey(KeyCode.LeftControl))
         {
             DisableParameters();
             if (Input.GetKey(KeyCode.A) && Input.GetKey(KeyCode.D))
@@ -65,65 +57,63 @@ public class PlayerController : MonoBehaviour
             animator.SetBool("isWalking", true);
         }
 
-        if (Input.GetKey(KeyCode.W) && Input.GetKey(KeyCode.LeftShift) && !Input.GetKey(KeyCode.S))
+        else if (Input.GetKey(KeyCode.W) && Input.GetKey(KeyCode.LeftShift) && !Input.GetKey(KeyCode.S))
         {
             DisableParameters();
             transform.position += transform.forward * (movementSpeed * 1.5f) * Time.deltaTime;
             animator.SetBool("isRunning", true);
         }
 
-        if (Input.GetKey(KeyCode.S) && !Input.GetKey(KeyCode.W) && !Input.GetKey(KeyCode.LeftControl))
+        else if (Input.GetKey(KeyCode.S) && !Input.GetKey(KeyCode.W) && !Input.GetKey(KeyCode.LeftControl) && !Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.D))
         {
             DisableParameters();
             animator.SetBool("isWalkingBackward", true);
             transform.position -= transform.forward * (movementSpeed * 0.75f) * Time.deltaTime;
         }
 
-        if (Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.D) && !Input.GetKey(KeyCode.W))
+        else if (Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.D) && !Input.GetKey(KeyCode.W) && !Input.GetKey(KeyCode.S) && !Input.GetKey(KeyCode.LeftControl))
         {
             DisableParameters();
             animator.SetBool("isStrafingLeft", true);
             transform.position += -transform.right * (movementSpeed * 0.75f) * Time.deltaTime;
         }
 
-        if (Input.GetKey(KeyCode.D) && !Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.W))
+        else if (Input.GetKey(KeyCode.D) && !Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.W) && !Input.GetKey(KeyCode.S) && !Input.GetKey(KeyCode.LeftControl))
         {
             DisableParameters();
             animator.SetBool("isStrafingRight", true);
             transform.position += transform.right * (movementSpeed * 0.75f) * Time.deltaTime;
         }
 
-        if (Input.GetKey(KeyCode.LeftControl) && !Input.GetKey(KeyCode.W))
+        else if (Input.GetKey(KeyCode.LeftControl) && !Input.GetKey(KeyCode.W))
         {
             DisableParameters();
+            animator.SetBool("isCrouching", true);
             if (Input.GetKey(KeyCode.A))
             {
                 animator.SetBool("isStrafingLeft", true);
+                transform.position += -transform.right * (movementSpeed * 0.5f) * Time.deltaTime;
             }
             if (Input.GetKey(KeyCode.D))
             {
                 animator.SetBool("isStrafingRight", true);
+                transform.position += transform.right * (movementSpeed * 0.5f) * Time.deltaTime;
             }
-            animator.SetBool("isCrouching", true);
         }
 
-        if (Input.GetKey(KeyCode.LeftControl) && Input.GetKey(KeyCode.W) && !Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.D))
+        else if (Input.GetKey(KeyCode.LeftControl) && Input.GetKey(KeyCode.W) && !Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.D))
         {
             DisableParameters();
             animator.SetBool("isSneaking", true);
             transform.position += transform.forward * (movementSpeed * 0.75f) * Time.deltaTime;
         }
 
-        if (Input.GetKey(KeyCode.Space) && isGrounded)
+        else if (Physics.Raycast(transform.position, down, 5))
         {
             DisableParameters();
-            animator.SetBool("isJumping", true);
-            rb.AddForce(jump * jumpForce, ForceMode.Impulse);
-            isGrounded = false;
+            animator.SetBool("isFalling", true);
         }
     }
-
-    #endregion
 
     public void DisableParameters()
     {
@@ -135,4 +125,6 @@ public class PlayerController : MonoBehaviour
             }
         }
     }
+
+    #endregion
 }
