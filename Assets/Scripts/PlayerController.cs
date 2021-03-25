@@ -42,10 +42,8 @@ public class PlayerController : MonoBehaviour
     #region MovementStates;
 
     public void MovementStates()
-    {
-        Vector3 down = transform.TransformDirection(Vector3.down);
-        
-        if (Input.GetKey(KeyCode.W) && !Input.GetKey(KeyCode.S) && !Input.GetKey(KeyCode.LeftControl))
+    {   
+        if (Input.GetKey(KeyCode.W) && !Input.GetKey(KeyCode.S) && !Input.GetKey(KeyCode.LeftControl) && !Input.GetKey(KeyCode.LeftShift))
         {
             DisableParameters();
             if (Input.GetKey(KeyCode.A) && Input.GetKey(KeyCode.D))
@@ -106,12 +104,6 @@ public class PlayerController : MonoBehaviour
             DisableParameters();
             animator.SetBool("isSneaking", true);
             transform.position += transform.forward * (movementSpeed * 0.75f) * Time.deltaTime;
-        }
-
-        else if (Physics.Raycast(transform.position, down, 5))
-        {
-            DisableParameters();
-            animator.SetBool("isFalling", true);
         }
     }
 
