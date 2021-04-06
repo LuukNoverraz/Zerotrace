@@ -6,7 +6,14 @@ public class PlayerController : MonoBehaviour
 {
     public Transform cameraTransform;
     public Animator animator;
+    public Collider capsuleCollider;
     public Rigidbody rb;
+
+    private Vector3 standardCenter = new Vector3(0, 82.8f, 0);
+    private float standardHeight = 167.8f;
+
+    private Vector3 crouchCenter = new Vector3(0, 73.7f, 0);
+    private float crouchHeight = 147.3f;
 
     public float movementSpeed = 4f;
     public Vector3 jump;
@@ -51,14 +58,15 @@ public class PlayerController : MonoBehaviour
                 animator.SetBool("isStrafingLeft", true);
                 animator.SetBool("isStrafingRight", true);
             }
-            transform.position += transform.forward * movementSpeed * Time.deltaTime;
+            rb.velocity = transform.forward * movementSpeed * 100 * Time.deltaTime;
+            // transform.position += transform.forward * movementSpeed * Time.deltaTime;
             animator.SetBool("isWalking", true);
         }
 
         else if (Input.GetKey(KeyCode.W) && Input.GetKey(KeyCode.LeftShift) && !Input.GetKey(KeyCode.S))
         {
             DisableParameters();
-            transform.position += transform.forward * (movementSpeed * 1.5f) * Time.deltaTime;
+            transform.position += transform.forward * (movementSpeed * 1.75f) * Time.deltaTime;
             animator.SetBool("isRunning", true);
         }
 
@@ -87,6 +95,8 @@ public class PlayerController : MonoBehaviour
         {
             DisableParameters();
             animator.SetBool("isCrouching", true);
+            capsuleCollider.GetComponent<CapsuleCollider>().center = crouchCenter;
+            capsuleCollider.GetComponent<CapsuleCollider>().height = crouchHeight;
             if (Input.GetKey(KeyCode.A))
             {
                 animator.SetBool("isStrafingLeft", true);
@@ -103,12 +113,19 @@ public class PlayerController : MonoBehaviour
         {
             DisableParameters();
             animator.SetBool("isSneaking", true);
+            capsuleCollider.GetComponent<CapsuleCollider>().center = crouchCenter;
+            capsuleCollider.GetComponent<CapsuleCollider>().height = crouchHeight;
             transform.position += transform.forward * (movementSpeed * 0.75f) * Time.deltaTime;
         }
     }
 
     public void DisableParameters()
     {
+        rb.velocity = Vector3.zero;
+
+        capsuleCollider.GetComponent<CapsuleCollider>().center = standardCenter;
+        capsuleCollider.GetComponent<CapsuleCollider>().height = standardHeight;
+
         foreach (AnimatorControllerParameter parameter in animator.parameters)
         {
             if (parameter.type == AnimatorControllerParameterType.Bool)
