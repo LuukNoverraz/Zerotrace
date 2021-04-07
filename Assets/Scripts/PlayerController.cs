@@ -16,6 +16,7 @@ public class PlayerController : MonoBehaviour
     private float crouchHeight = 147.3f;
 
     public float movementSpeed = 4f;
+    public float movementMultiplier = 60f;
     public Vector3 jump;
     public float jumpForce = 2.0f;
     public float rotationSpeed = 30f;
@@ -58,15 +59,14 @@ public class PlayerController : MonoBehaviour
                 animator.SetBool("isStrafingLeft", true);
                 animator.SetBool("isStrafingRight", true);
             }
-            rb.velocity = transform.forward * movementSpeed * 100 * Time.deltaTime;
-            // transform.position += transform.forward * movementSpeed * Time.deltaTime;
+            rb.velocity = transform.forward * movementSpeed * movementMultiplier * Time.deltaTime;
             animator.SetBool("isWalking", true);
         }
 
         else if (Input.GetKey(KeyCode.W) && Input.GetKey(KeyCode.LeftShift) && !Input.GetKey(KeyCode.S))
         {
             DisableParameters();
-            transform.position += transform.forward * (movementSpeed * 1.75f) * Time.deltaTime;
+            rb.velocity = transform.forward * (movementSpeed * 1.75f) * movementMultiplier * Time.deltaTime;
             animator.SetBool("isRunning", true);
         }
 
@@ -74,58 +74,67 @@ public class PlayerController : MonoBehaviour
         {
             DisableParameters();
             animator.SetBool("isWalkingBackward", true);
-            transform.position -= transform.forward * (movementSpeed * 0.75f) * Time.deltaTime;
+            rb.velocity = transform.forward * (movementSpeed * -0.75f) * movementMultiplier * Time.deltaTime;
         }
 
         else if (Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.D) && !Input.GetKey(KeyCode.W) && !Input.GetKey(KeyCode.S) && !Input.GetKey(KeyCode.LeftControl))
         {
             DisableParameters();
             animator.SetBool("isStrafingLeft", true);
-            transform.position += -transform.right * (movementSpeed * 0.75f) * Time.deltaTime;
+            rb.velocity = -transform.right * (movementSpeed * 0.75f) * movementMultiplier * Time.deltaTime;
         }
 
         else if (Input.GetKey(KeyCode.D) && !Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.W) && !Input.GetKey(KeyCode.S) && !Input.GetKey(KeyCode.LeftControl))
         {
             DisableParameters();
             animator.SetBool("isStrafingRight", true);
-            transform.position += transform.right * (movementSpeed * 0.75f) * Time.deltaTime;
+            rb.velocity = transform.right * (movementSpeed * 0.75f) * movementMultiplier * Time.deltaTime;
         }
 
         else if (Input.GetKey(KeyCode.LeftControl) && !Input.GetKey(KeyCode.W))
         {
             DisableParameters();
             animator.SetBool("isCrouching", true);
-            capsuleCollider.GetComponent<CapsuleCollider>().center = crouchCenter;
-            capsuleCollider.GetComponent<CapsuleCollider>().height = crouchHeight;
-            if (Input.GetKey(KeyCode.A))
+            CrouchCollider();
+            if (Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.D))
             {
                 animator.SetBool("isStrafingLeft", true);
-                transform.position += -transform.right * (movementSpeed * 0.5f) * Time.deltaTime;
+                rb.velocity = -transform.right * (movementSpeed * 0.5f) * movementMultiplier * Time.deltaTime;
             }
-            if (Input.GetKey(KeyCode.D))
+            if (Input.GetKey(KeyCode.D) && !Input.GetKey(KeyCode.A))
             {
                 animator.SetBool("isStrafingRight", true);
-                transform.position += transform.right * (movementSpeed * 0.5f) * Time.deltaTime;
+                rb.velocity = transform.right * (movementSpeed * 0.5f) * movementMultiplier * Time.deltaTime;
             }
         }
 
         else if (Input.GetKey(KeyCode.LeftControl) && Input.GetKey(KeyCode.W) && !Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.D))
         {
             DisableParameters();
+            CrouchCollider();
             animator.SetBool("isSneaking", true);
-            capsuleCollider.GetComponent<CapsuleCollider>().center = crouchCenter;
-            capsuleCollider.GetComponent<CapsuleCollider>().height = crouchHeight;
-            transform.position += transform.forward * (movementSpeed * 0.75f) * Time.deltaTime;
+            rb.velocity = transform.forward * (movementSpeed * 0.75f) * movementMultiplier * Time.deltaTime;
         }
+    }
+    
+    public void StandardCollider()
+    {
+        capsuleCollider.GetComponent<CapsuleCollider>().center = standardCenter;
+        capsuleCollider.GetComponent<CapsuleCollider>().height = standardHeight;
+    }
+
+    public void CrouchCollider()
+    {
+        capsuleCollider.GetComponent<CapsuleCollider>().center = crouchCenter;
+        capsuleCollider.GetComponent<CapsuleCollider>().height = crouchHeight;
     }
 
     public void DisableParameters()
     {
         rb.velocity = Vector3.zero;
 
-        capsuleCollider.GetComponent<CapsuleCollider>().center = standardCenter;
-        capsuleCollider.GetComponent<CapsuleCollider>().height = standardHeight;
-
+        StandardCollider();
+        
         foreach (AnimatorControllerParameter parameter in animator.parameters)
         {
             if (parameter.type == AnimatorControllerParameterType.Bool)
