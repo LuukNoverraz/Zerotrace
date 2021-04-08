@@ -66,7 +66,18 @@ public class PlayerController : MonoBehaviour
         else if (Input.GetKey(KeyCode.W) && Input.GetKey(KeyCode.LeftShift) && !Input.GetKey(KeyCode.S))
         {
             DisableParameters();
-            rb.velocity = transform.forward * (movementSpeed * 1.75f) * movementMultiplier * Time.deltaTime;
+            if (Input.GetKey(KeyCode.A))
+            {
+                rb.velocity = -transform.right * 2 + transform.forward * (movementSpeed * 1.75f) * movementMultiplier * Time.deltaTime;
+            }
+            else if (Input.GetKey(KeyCode.D))
+            {
+                rb.velocity = transform.right * 2 + transform.forward * (movementSpeed * 1.75f) * movementMultiplier * Time.deltaTime;
+            }
+            else
+            {
+                rb.velocity = transform.forward * (movementSpeed * 1.75f) * movementMultiplier * Time.deltaTime;
+            }
             animator.SetBool("isRunning", true);
         }
 
@@ -114,6 +125,12 @@ public class PlayerController : MonoBehaviour
             CrouchCollider();
             animator.SetBool("isSneaking", true);
             rb.velocity = transform.forward * (movementSpeed * 0.75f) * movementMultiplier * Time.deltaTime;
+        }
+
+        else if (Input.GetKeyDown(KeyCode.Space))
+        {
+            DisableParameters();
+            rb.velocity = transform.up * 1000 * Time.deltaTime;
         }
     }
     
