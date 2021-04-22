@@ -6,13 +6,14 @@ public class PlayerController2 : MonoBehaviour
 {
     public CharacterController controller;
     public Animator animator;
+    public GameObject speedLines;
 
     private Vector3 playerVelocity;
     private bool groundedPlayer;
     private bool crouching;
-    private float playerSpeed = 3.0f;
-    private float jumpHeight = 1.0f;
-    private float gravityValue = -9.81f;
+    private float playerSpeed = 3.5f;
+    private float jumpHeight = 1.75f;
+    private float gravityValue = -9.81f * 3.5f;
 
     private Vector3 standardCenter = new Vector3(0, 90f, 0);
     private float standardHeight = 170f;
@@ -62,8 +63,10 @@ public class PlayerController2 : MonoBehaviour
 
         if (Input.GetButtonDown("Jump") && groundedPlayer)
         {
-            DisableParameters();
-            StartCoroutine(JumpWait());
+            // DisableParameters();
+            // animator.SetBool("isJumping", true);
+            playerVelocity.y += Mathf.Sqrt(jumpHeight * -3.0f * gravityValue);
+            SpeedLines();
         }
 
         // if (playerVelocity.y < 0)
@@ -107,6 +110,12 @@ public class PlayerController2 : MonoBehaviour
         }
     }
 
+    public void SpeedLines()
+    {
+        GameObject newSpeedLines = Instantiate(speedLines, transform.position, Quaternion.identity);
+        Destroy(newSpeedLines, 2f);
+    }
+
     public void DisableParameters()
     {   
         foreach (AnimatorControllerParameter parameter in animator.parameters)
@@ -117,15 +126,6 @@ public class PlayerController2 : MonoBehaviour
             }
         }
     }
-
-    IEnumerator JumpWait()
-    {
-        yield return new WaitForSeconds(0.2f);
-        animator.SetBool("isJumping", true);
-        playerVelocity.y += Mathf.Sqrt(jumpHeight * -3.0f * gravityValue);
-    }
-
-
 }
 
 
