@@ -2981,6 +2981,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   controller: {fileID: 1280892768}
   animator: {fileID: 1280892770}
+  rb: {fileID: 1280892772}
 --- !u!95 &1280892770
 Animator:
   serializedVersion: 3

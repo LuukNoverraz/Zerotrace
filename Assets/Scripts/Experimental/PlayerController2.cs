@@ -63,9 +63,14 @@ public class PlayerController2 : MonoBehaviour
         if (Input.GetButtonDown("Jump") && groundedPlayer)
         {
             DisableParameters();
-            animator.SetBool("isJumping", true);
-            playerVelocity.y += Mathf.Sqrt(jumpHeight * -3.0f * gravityValue);
+            StartCoroutine(JumpWait());
         }
+
+        // if (playerVelocity.y < 0)
+        // {
+        //     DisableParameters()
+        //     animator.SetBool("isFalling", true);
+        // }
 
         playerVelocity.y += gravityValue * Time.deltaTime;
         controller.Move(playerVelocity * Time.deltaTime);
@@ -76,29 +81,29 @@ public class PlayerController2 : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.LeftShift))
         {
             DisableParameters();
-            playerSpeed *= 2f;
+            playerSpeed = 6f;
         }
 
         if (Input.GetKeyUp(KeyCode.LeftShift))
         {
             DisableParameters();
-            playerSpeed /= 2f;
+            playerSpeed = 3f;
         }
 
         if (Input.GetKeyDown(KeyCode.LeftControl))
         {
             DisableParameters();
-            playerSpeed /= 1.5f;
-            controller.center = crouchCenter;
-            controller.height = crouchHeight;
+            playerSpeed = 2f;
+            // controller.center = crouchCenter;
+            // controller.height = crouchHeight;
         }
 
         if (Input.GetKeyUp(KeyCode.LeftControl))
         {
             DisableParameters();
-            playerSpeed *= 1.5f;
-            controller.center = standardCenter;
-            controller.height = standardHeight;
+            playerSpeed = 3f;
+            // controller.center = standardCenter;
+            // controller.height = standardHeight;
         }
     }
 
@@ -112,6 +117,14 @@ public class PlayerController2 : MonoBehaviour
             }
         }
     }
+
+    IEnumerator JumpWait()
+    {
+        yield return new WaitForSeconds(0.2f);
+        animator.SetBool("isJumping", true);
+        playerVelocity.y += Mathf.Sqrt(jumpHeight * -3.0f * gravityValue);
+    }
+
 
 }
 
