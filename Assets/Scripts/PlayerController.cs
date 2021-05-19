@@ -4,154 +4,112 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    public Transform cameraTransform;
+    public CharacterController controller;
     public Animator animator;
-    public Collider capsuleCollider;
-    public Rigidbody rb;
 
-    private Vector3 standardCenter = new Vector3(0, 82.8f, 0);
-    private float standardHeight = 167.8f;
+    private Vector3 playerVelocity;
+    private bool groundedPlayer;
+    private bool crouching;
+    private float playerSpeed = 3.5f;
+    private float jumpHeight = 1.75f;
+    private float gravityValue = -9.81f * 3.5f;
 
-    private Vector3 crouchCenter = new Vector3(0, 73.7f, 0);
-    private float crouchHeight = 147.3f;
+    private Vector3 standardCenter = new Vector3(0, 90f, 0);
+    private float standardHeight = 170f;
 
-    public float movementSpeed = 4f;
-    public float movementMultiplier = 60f;
-    public Vector3 jump;
-    public float jumpForce = 2.0f;
-    public float rotationSpeed = 30f;
-    public float deadZoneDegrees = 15f;
+    private Vector3 crouchCenter = new Vector3(0, 65f, 0);
+    private float crouchHeight = 110f;
 
-    private bool isGrounded = true;
+    void Update()
+    {
+        groundedPlayer = controller.isGrounded;
+        if (groundedPlayer && playerVelocity.y < 0)
+        {
+            playerVelocity.y = 0f;
+        }
 
-    private Vector3 cameraDirection;
-    private Vector3 playerDirection;
-    private Quaternion targetRotation;
+        Vector3 move = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
+        controller.Move(move * Time.deltaTime * playerSpeed);
+
+        if (move == Vector3.zero)
+        {
+            DisableParameters();
+            if (Input.GetKey(KeyCode.LeftControl))
+            {
+                animator.SetBool("isCrouching", true);
+            }
+        }
+
+        if (move != Vector3.zero)
+        {
+            if (!Input.GetKey(KeyCode.LeftShift) && !Input.GetKey(KeyCode.LeftControl))
+            {
+                DisableParameters();
+                animator.SetBool("isWalking", true);
+            }
+            else if (Input.GetKey(KeyCode.LeftShift))
+            {
+                DisableParameters();
+                animator.SetBool("isRunning", true);
+            }
+            else if (Input.GetKey(KeyCode.LeftControl))
+            {
+                DisableParameters();
+                animator.SetBool("isSneaking", true);
+            }
+            transform.forward = move;
+        }
+
+        // if (Input.GetButtonDown("Jump") && groundedPlayer)
+        // {
+        //     // DisableParameters();
+        //     // animator.SetBool("isJumping", true);
+        //     playerVelocity.y += Mathf.Sqrt(jumpHeight * -3.0f * gravityValue);
+        // }
+
+        // if (playerVelocity.y < 0)
+        // {
+        //     DisableParameters()
+        //     animator.SetBool("isFalling", true);
+        // }
+
+        playerVelocity.y += gravityValue * Time.deltaTime;
+        controller.Move(playerVelocity * Time.deltaTime);
+    }
 
     void FixedUpdate()
     {
-        if (!Input.anyKeyDown)
+        if (Input.GetKeyDown(KeyCode.LeftShift))
         {
             DisableParameters();
+            playerSpeed = 6f;
         }
 
-        MovementStates();
-    
-        cameraDirection = new Vector3(cameraTransform.forward.x, 0f, cameraTransform.forward.z);
-        playerDirection = new Vector3(transform.forward.x, 0f, transform.forward.z);
-
-        if (Vector3.Angle(cameraDirection, playerDirection) > 15)
-        {
-            targetRotation = Quaternion.LookRotation(cameraDirection, transform.up);
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
-        }
-    }
-
-    #region MovementStates;
-
-    public void MovementStates()
-    {   
-        if (Input.GetKey(KeyCode.W) && !Input.GetKey(KeyCode.S) && !Input.GetKey(KeyCode.LeftControl) && !Input.GetKey(KeyCode.LeftShift))
+        if (Input.GetKeyUp(KeyCode.LeftShift))
         {
             DisableParameters();
-            if (Input.GetKey(KeyCode.A) && Input.GetKey(KeyCode.D))
-            {
-                animator.SetBool("isStrafingLeft", true);
-                animator.SetBool("isStrafingRight", true);
-            }
-            rb.velocity = transform.forward * movementSpeed * movementMultiplier * Time.deltaTime;
-            animator.SetBool("isWalking", true);
+            playerSpeed = 3f;
         }
 
-        else if (Input.GetKey(KeyCode.W) && Input.GetKey(KeyCode.LeftShift) && !Input.GetKey(KeyCode.S))
+        if (Input.GetKeyDown(KeyCode.LeftControl))
         {
             DisableParameters();
-            if (Input.GetKey(KeyCode.A))
-            {
-                rb.velocity = -transform.right * 2 + transform.forward * (movementSpeed * 1.75f) * movementMultiplier * Time.deltaTime;
-            }
-            else if (Input.GetKey(KeyCode.D))
-            {
-                rb.velocity = transform.right * 2 + transform.forward * (movementSpeed * 1.75f) * movementMultiplier * Time.deltaTime;
-            }
-            else
-            {
-                rb.velocity = transform.forward * (movementSpeed * 1.75f) * movementMultiplier * Time.deltaTime;
-            }
-            animator.SetBool("isRunning", true);
+            playerSpeed = 2f;
+            controller.center = crouchCenter;
+            controller.height = crouchHeight;
         }
 
-        else if (Input.GetKey(KeyCode.S) && !Input.GetKey(KeyCode.W) && !Input.GetKey(KeyCode.LeftControl) && !Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.D))
+        if (Input.GetKeyUp(KeyCode.LeftControl))
         {
             DisableParameters();
-            animator.SetBool("isWalkingBackward", true);
-            rb.velocity = transform.forward * (movementSpeed * -0.75f) * movementMultiplier * Time.deltaTime;
+            playerSpeed = 3f;
+            controller.center = standardCenter;
+            controller.height = standardHeight;
         }
-
-        else if (Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.D) && !Input.GetKey(KeyCode.W) && !Input.GetKey(KeyCode.S) && !Input.GetKey(KeyCode.LeftControl))
-        {
-            DisableParameters();
-            animator.SetBool("isStrafingLeft", true);
-            rb.velocity = -transform.right * (movementSpeed * 0.75f) * movementMultiplier * Time.deltaTime;
-        }
-
-        else if (Input.GetKey(KeyCode.D) && !Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.W) && !Input.GetKey(KeyCode.S) && !Input.GetKey(KeyCode.LeftControl))
-        {
-            DisableParameters();
-            animator.SetBool("isStrafingRight", true);
-            rb.velocity = transform.right * (movementSpeed * 0.75f) * movementMultiplier * Time.deltaTime;
-        }
-
-        else if (Input.GetKey(KeyCode.LeftControl) && !Input.GetKey(KeyCode.W))
-        {
-            DisableParameters();
-            animator.SetBool("isCrouching", true);
-            CrouchCollider();
-            if (Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.D))
-            {
-                animator.SetBool("isStrafingLeft", true);
-                rb.velocity = -transform.right * (movementSpeed * 0.5f) * movementMultiplier * Time.deltaTime;
-            }
-            if (Input.GetKey(KeyCode.D) && !Input.GetKey(KeyCode.A))
-            {
-                animator.SetBool("isStrafingRight", true);
-                rb.velocity = transform.right * (movementSpeed * 0.5f) * movementMultiplier * Time.deltaTime;
-            }
-        }
-
-        else if (Input.GetKey(KeyCode.LeftControl) && Input.GetKey(KeyCode.W) && !Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.D))
-        {
-            DisableParameters();
-            CrouchCollider();
-            animator.SetBool("isSneaking", true);
-            rb.velocity = transform.forward * (movementSpeed * 0.75f) * movementMultiplier * Time.deltaTime;
-        }
-
-        else if (Input.GetKeyDown(KeyCode.Space))
-        {
-            DisableParameters();
-            rb.velocity = transform.up * 1000 * Time.deltaTime;
-        }
-    }
-    
-    public void StandardCollider()
-    {
-        capsuleCollider.GetComponent<CapsuleCollider>().center = standardCenter;
-        capsuleCollider.GetComponent<CapsuleCollider>().height = standardHeight;
-    }
-
-    public void CrouchCollider()
-    {
-        capsuleCollider.GetComponent<CapsuleCollider>().center = crouchCenter;
-        capsuleCollider.GetComponent<CapsuleCollider>().height = crouchHeight;
     }
 
     public void DisableParameters()
-    {
-        rb.velocity = Vector3.zero;
-
-        StandardCollider();
-        
+    {   
         foreach (AnimatorControllerParameter parameter in animator.parameters)
         {
             if (parameter.type == AnimatorControllerParameterType.Bool)
@@ -160,6 +118,6 @@ public class PlayerController : MonoBehaviour
             }
         }
     }
-
-    #endregion
 }
+
+
