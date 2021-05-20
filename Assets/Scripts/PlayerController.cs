@@ -10,9 +10,13 @@ public class PlayerController : MonoBehaviour
     private Vector3 playerVelocity;
     private bool groundedPlayer;
     private bool crouching;
-    private float playerSpeed = 3.5f;
-    private float jumpHeight = 1.75f;
-    private float gravityValue = -9.81f * 3.5f;
+    private float playerSpeed = 2.5f;
+
+    public float tapSpeed = 0.5f;
+    private float lastTapTimeW = 0;
+    private float lastTapTimeA = 0;
+    private float lastTapTimeS = 0;
+    private float lastTapTimeD = 0;
 
     private Vector3 standardCenter = new Vector3(0, 90f, 0);
     private float standardHeight = 170f;
@@ -29,6 +33,7 @@ public class PlayerController : MonoBehaviour
         }
 
         Vector3 move = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
+        move = Vector3.ClampMagnitude(move, 1f);
         controller.Move(move * Time.deltaTime * playerSpeed);
 
         if (move == Vector3.zero)
@@ -60,21 +65,45 @@ public class PlayerController : MonoBehaviour
             transform.forward = move;
         }
 
-        // if (Input.GetButtonDown("Jump") && groundedPlayer)
-        // {
-        //     // DisableParameters();
-        //     // animator.SetBool("isJumping", true);
-        //     playerVelocity.y += Mathf.Sqrt(jumpHeight * -3.0f * gravityValue);
-        // }
+        if(Input.GetKeyDown(KeyCode.W))
+        {
+            if((Time.time - lastTapTimeW) < tapSpeed)
+            {
+                DoubleTap();
+            }
+            
+            lastTapTimeW = Time.time;
+        }
 
-        // if (playerVelocity.y < 0)
-        // {
-        //     DisableParameters()
-        //     animator.SetBool("isFalling", true);
-        // }
+        if(Input.GetKeyDown(KeyCode.A))
+        {
+            if((Time.time - lastTapTimeA) < tapSpeed)
+            {
+                DoubleTap();
+            }
+            
+            lastTapTimeA = Time.time;
+        }
 
-        playerVelocity.y += gravityValue * Time.deltaTime;
-        controller.Move(playerVelocity * Time.deltaTime);
+        if(Input.GetKeyDown(KeyCode.S))
+        {
+            if((Time.time - lastTapTimeS) < tapSpeed)
+            {
+                DoubleTap();
+            }
+            
+            lastTapTimeS = Time.time;
+        }
+
+        if(Input.GetKeyDown(KeyCode.D))
+        {
+            if((Time.time - lastTapTimeD) < tapSpeed)
+            {
+                DoubleTap();
+            }
+            
+            lastTapTimeD = Time.time;
+        }
     }
 
     void FixedUpdate()
@@ -82,13 +111,13 @@ public class PlayerController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.LeftShift))
         {
             DisableParameters();
-            playerSpeed = 6f;
+            playerSpeed = 5f;
         }
 
         if (Input.GetKeyUp(KeyCode.LeftShift))
         {
             DisableParameters();
-            playerSpeed = 3f;
+            playerSpeed = 2.5f;
         }
 
         if (Input.GetKeyDown(KeyCode.LeftControl))
@@ -102,10 +131,17 @@ public class PlayerController : MonoBehaviour
         if (Input.GetKeyUp(KeyCode.LeftControl))
         {
             DisableParameters();
-            playerSpeed = 3f;
+            playerSpeed = 2.5f;
             controller.center = standardCenter;
             controller.height = standardHeight;
         }
+    }
+
+    public void DoubleTap()
+    {
+        transform.position += transform.forward * 1.25f;
+
+        // Debug.Log("OK");
     }
 
     public void DisableParameters()
