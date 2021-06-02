@@ -7,8 +7,6 @@ public class PlayerController : MonoBehaviour
     public CharacterController controller;
     public Animator animator;
 
-    private Vector3 playerVelocity;
-    private bool groundedPlayer;
     private bool crouching;
     private float playerSpeed = 2.5f;
 
@@ -26,12 +24,6 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        groundedPlayer = controller.isGrounded;
-        if (groundedPlayer && playerVelocity.y < 0)
-        {
-            playerVelocity.y = 0f;
-        }
-
         Vector3 move = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
         move = Vector3.ClampMagnitude(move, 1f);
         controller.Move(move * Time.deltaTime * playerSpeed);
@@ -140,8 +132,6 @@ public class PlayerController : MonoBehaviour
     public void DoubleTap()
     {
         transform.position += transform.forward * 1.25f;
-
-        // Debug.Log("OK");
     }
 
     public void DisableParameters()
