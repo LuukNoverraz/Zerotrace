@@ -4,10 +4,15 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    public GameController gameController;
     public CharacterController controller;
+    public Rigidbody rb;
     public Animator animator;
+    public Animation dashbarAnimation;
+    public LayerMask playerMask;
 
     private bool crouching;
+    private bool warpReady = true;
     private float playerSpeed = 2.5f;
 
     public float tapSpeed = 0.5f;
@@ -57,49 +62,6 @@ public class PlayerController : MonoBehaviour
             transform.forward = move;
         }
 
-        if(Input.GetKeyDown(KeyCode.W))
-        {
-            if((Time.time - lastTapTimeW) < tapSpeed)
-            {
-                DoubleTap();
-            }
-            
-            lastTapTimeW = Time.time;
-        }
-
-        if(Input.GetKeyDown(KeyCode.A))
-        {
-            if((Time.time - lastTapTimeA) < tapSpeed)
-            {
-                DoubleTap();
-            }
-            
-            lastTapTimeA = Time.time;
-        }
-
-        if(Input.GetKeyDown(KeyCode.S))
-        {
-            if((Time.time - lastTapTimeS) < tapSpeed)
-            {
-                DoubleTap();
-            }
-            
-            lastTapTimeS = Time.time;
-        }
-
-        if(Input.GetKeyDown(KeyCode.D))
-        {
-            if((Time.time - lastTapTimeD) < tapSpeed)
-            {
-                DoubleTap();
-            }
-            
-            lastTapTimeD = Time.time;
-        }
-    }
-
-    void FixedUpdate()
-    {
         if (Input.GetKeyDown(KeyCode.LeftShift))
         {
             DisableParameters();
@@ -127,11 +89,87 @@ public class PlayerController : MonoBehaviour
             controller.center = standardCenter;
             controller.height = standardHeight;
         }
+
+        if(Input.GetKeyDown(KeyCode.W) && !Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.S) && !Input.GetKey(KeyCode.D))
+        {
+            if((Time.time - lastTapTimeW) < tapSpeed)
+            {
+                DoubleTap();
+            }
+            
+            lastTapTimeW = Time.time;
+        }
+
+        if(Input.GetKeyDown(KeyCode.A) && !Input.GetKey(KeyCode.W) && !Input.GetKey(KeyCode.S) && !Input.GetKey(KeyCode.D))
+        {
+            if((Time.time - lastTapTimeA) < tapSpeed)
+            {
+                DoubleTap();
+            }
+            
+            lastTapTimeA = Time.time;
+        }
+
+        if(Input.GetKeyDown(KeyCode.S) && !Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.W) && !Input.GetKey(KeyCode.D))
+        {
+            if((Time.time - lastTapTimeS) < tapSpeed)
+            {
+                DoubleTap();
+            }
+            
+            lastTapTimeS = Time.time;
+        }
+
+        if(Input.GetKeyDown(KeyCode.D) && !Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.S) && !Input.GetKey(KeyCode.W))
+        {
+            if((Time.time - lastTapTimeD) < tapSpeed)
+            {
+                DoubleTap();
+            }
+            
+            lastTapTimeD = Time.time;
+        }
+
+        // RaycastHit hit;
+        // if (Physics.Raycast(transform.position, transform.forward, out hit, 2))
+        // {
+        //     Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.forward) * hit.distance, Color.blue);
+        //     Debug.Log(hit.collider.gameObject);
+        // }
+    }
+    
+    void LateUpdate()
+    {
+        transform.position = new Vector3(transform.position.x, -0.275f, transform.position.z);
     }
 
     public void DoubleTap()
     {
-        transform.position += transform.forward * 1.25f;
+        RaycastHit hit;
+        if (warpReady && !Physics.Raycast(transform.position, transform.forward, out hit, 2))
+        {
+            dashbarAnimation.Play();
+            controller.enabled = false;
+            transform.position += transform.forward * 2f;
+            controller.enabled = true;
+            warpReady = false;
+            StartCoroutine("Cooldown");
+        }
+    }
+
+    public IEnumerator Cooldown()
+    {
+        yield return new WaitForSeconds (5);
+        warpReady = true;
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if(other.gameObject.tag == "Key") 
+        {
+            gameController.GotKey();
+            Destroy(other.gameObject);
+        }
     }
 
     public void DisableParameters()
