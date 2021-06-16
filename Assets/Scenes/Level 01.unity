@@ -5112,6 +5112,7 @@ MonoBehaviour:
   - {fileID: 1090130750}
   chasing: 0
   lookRadius: 2.5
+  target: {fileID: 1280892773}
 --- !u!54 &586184479
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -18513,6 +18514,7 @@ MonoBehaviour:
   - {fileID: 724458531}
   chasing: 0
   lookRadius: 2.5
+  target: {fileID: 1280892773}
 --- !u!54 &1081450058
 Rigidbody:
   m_ObjectHideFlags: 0

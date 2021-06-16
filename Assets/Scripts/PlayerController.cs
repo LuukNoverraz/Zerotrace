@@ -32,10 +32,12 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
+        // Move player with charactercontroller based on input from WASD keys
         Vector3 move = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
         move = Vector3.ClampMagnitude(move, 1f);
         controller.Move(move * Time.deltaTime * playerSpeed);
 
+        // Animation logic
         if (move == Vector3.zero)
         {
             DisableParameters();
@@ -65,6 +67,7 @@ public class PlayerController : MonoBehaviour
             transform.forward = move;
         }
 
+        // Change player speed and hitbox values based on input
         if (Input.GetKeyDown(KeyCode.LeftShift))
         {
             DisableParameters();
@@ -93,6 +96,7 @@ public class PlayerController : MonoBehaviour
             controller.height = standardHeight;
         }
 
+        // Logic for double tapping so the player can dash forward after pressing a key twice
         if(Input.GetKeyDown(KeyCode.W) && !Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.S) && !Input.GetKey(KeyCode.D))
         {
             if((Time.time - lastTapTimeW) < tapSpeed)
@@ -133,14 +137,10 @@ public class PlayerController : MonoBehaviour
             lastTapTimeD = Time.time;
         }
     }
-    
-    void LateUpdate()
-    {
-        transform.position = new Vector3(transform.position.x, -0.275f, transform.position.z);
-    }
 
     public void DoubleTap()
     {
+        // Cast raycast in front of player, dash only works if there's enough room in front of player so the player can't go into or past walls
         RaycastHit hit;
         if (warpReady && !Physics.Raycast(transform.position, transform.forward, out hit, 2))
         {
@@ -163,6 +163,7 @@ public class PlayerController : MonoBehaviour
     {
         if (other.gameObject.tag == "Enemy")
         {
+            // Losing screen appears and player gets destroyed when caught
             caughtAnimation.Play();
             caughtButtons[0].interactable = true;
             caughtButtons[1].interactable = true;
@@ -176,12 +177,13 @@ public class PlayerController : MonoBehaviour
         else if (other.gameObject.tag == "Enemy Vision")
         {
             other.gameObject.transform.parent.gameObject.GetComponent<GuardController>().chasing = true;
-            Debug.Log(other.gameObject.transform.parent.gameObject.GetComponent<GuardController>().chasing);
+            // Debug.Log(other.gameObject.transform.parent.gameObject.GetComponent<GuardController>().chasing);
         }
     }
 
     public void DisableParameters()
     {   
+        // Disables every parameter in the animator
         foreach (AnimatorControllerParameter parameter in animator.parameters)
         {
             if (parameter.type == AnimatorControllerParameterType.Bool)

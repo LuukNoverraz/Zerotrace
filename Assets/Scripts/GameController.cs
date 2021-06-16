@@ -13,6 +13,7 @@ public class GameController : MonoBehaviour
 
     public void GotKey()
     {
+        // Change sprite of key to unlocked
         levelKeys[amountOfKeys].sprite = keySprites[1];
         amountOfKeys++;
 
@@ -24,6 +25,7 @@ public class GameController : MonoBehaviour
 
     public void NextLevel()
     {
+        // Goes to the next level or to the menu if playing last stage
         Debug.Log("Next Level");
         if (currentLevel == "Tutorial")
         { 

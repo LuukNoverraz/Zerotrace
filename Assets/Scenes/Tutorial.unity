@@ -3348,6 +3348,7 @@ MonoBehaviour:
   - {fileID: 2134711534}
   chasing: 0
   lookRadius: 2.5
+  target: {fileID: 1280892773}
 --- !u!54 &563180675
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -15979,7 +15980,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0213af95dcc7b0845befdc2ce9309681, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player: {fileID: 1280892767}
 --- !u!114 &964118993
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -16159,6 +16159,7 @@ MonoBehaviour:
   - {fileID: 1115012111}
   chasing: 0
   lookRadius: 2.5
+  target: {fileID: 1280892773}
 --- !u!54 &975142674
 Rigidbody:
   m_ObjectHideFlags: 0
