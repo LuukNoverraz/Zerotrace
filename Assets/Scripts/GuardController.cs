@@ -34,7 +34,6 @@ public class GuardController : MonoBehaviour
         // Patrol if the agent has gotten near to one of the patrol points and is not in chase mode
         if (!agent.pathPending && agent.remainingDistance < 0.5f && !chasing)
         {
-            Debug.Log("Patrolling");
             GoToNextPoint();
         }
 
@@ -59,8 +58,6 @@ public class GuardController : MonoBehaviour
                 transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 5f);
             }
         }
-
-        Debug.Log(chasing);
     }
 
     void OnDrawGizmosSelected()
