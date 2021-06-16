@@ -1,10 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class GameController : MonoBehaviour
 {
+    public string currentLevel;
     public Sprite[] keySprites;
     public Image[] levelKeys;
     public int amountOfKeys = 0;
@@ -23,5 +25,13 @@ public class GameController : MonoBehaviour
     public void NextLevel()
     {
         Debug.Log("Next Level");
+        if (currentLevel == "Tutorial")
+        { 
+            SceneManager.LoadScene("Level 01", LoadSceneMode.Single);
+        }
+        // if (currentLevel == "Level 01")
+        // {
+            
+        // }
     }
 }

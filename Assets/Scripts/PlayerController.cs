@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
@@ -9,6 +10,8 @@ public class PlayerController : MonoBehaviour
     public Rigidbody rb;
     public Animator animator;
     public Animation dashbarAnimation;
+    public Animation caughtAnimation;
+    public Button[] caughtButtons;
     public LayerMask playerMask;
 
     private bool crouching;
@@ -165,10 +168,22 @@ public class PlayerController : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if(other.gameObject.tag == "Key") 
+        Debug.Log(other.gameObject.tag);
+        if (other.gameObject.tag == "Enemy")
+        {
+            caughtAnimation.Play();
+            caughtButtons[0].interactable = true;
+            caughtButtons[1].interactable = true;
+            Destroy(gameObject);
+        }
+        else if (other.gameObject.tag == "Key") 
         {
             gameController.GotKey();
             Destroy(other.gameObject);
+        }
+        else if (other.gameObject.tag == "Enemy Vision")
+        {
+            other.gameObject.transform.parent.gameObject.GetComponent<GuardController>().chasing = true;
         }
     }
 

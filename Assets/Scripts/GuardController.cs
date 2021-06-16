@@ -5,11 +5,10 @@ using System.Collections;
 
 public class GuardController : MonoBehaviour 
 {
-    public Rigidbody rb;
-    public Animator animator;
     public NavMeshAgent agent;
     public Transform[] points;
-    public float lookRadius = 2;
+    public bool chasing = false;
+    public float lookRadius = 1f;
     Transform target;
     private int destPoint = 0;
 
@@ -17,7 +16,7 @@ public class GuardController : MonoBehaviour
     void Start ()
     {
         target = PlayerManager.instance.player.transform;
-        // GoToNextPoint();
+        GoToNextPoint();
     }
 
 
@@ -44,10 +43,19 @@ public class GuardController : MonoBehaviour
             GoToNextPoint();
         }
 
+        Debug.Log("Chasing");
+
         float distance = Vector3.Distance(target.position, transform.position);
 
         if (distance <= lookRadius)
         {
+            chasing = true;
+        }
+
+        if (chasing)
+        {
+            Debug.Log("Look Radius : " + lookRadius);
+            Debug.Log("FOUND");
             agent.SetDestination(target.position);
 
             if (distance <= agent.stoppingDistance)
