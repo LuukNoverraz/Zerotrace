@@ -19273,8 +19273,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 1280892767}
-  positions: []
-  rotations: []
 --- !u!20 &1217164574
 Camera:
   m_ObjectHideFlags: 0
