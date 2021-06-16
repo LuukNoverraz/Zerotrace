@@ -6,9 +6,6 @@ public class CameraPos : MonoBehaviour
 {
     public GameObject player;
     private Vector3 offset;
-    public Vector3[] positions;
-    public Vector3[] rotations;
-
     void Start()
     {
        offset = transform.position; 

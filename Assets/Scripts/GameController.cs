@@ -29,9 +29,9 @@ public class GameController : MonoBehaviour
         { 
             SceneManager.LoadScene("Level 01", LoadSceneMode.Single);
         }
-        // if (currentLevel == "Level 01")
-        // {
-            
-        // }
+        if (currentLevel == "Level 01")
+        {
+            SceneManager.LoadScene("Menu", LoadSceneMode.Single);
+        }
     }
 }
