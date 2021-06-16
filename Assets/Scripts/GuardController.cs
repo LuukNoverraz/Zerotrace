@@ -38,17 +38,21 @@ public class GuardController : MonoBehaviour
 
     void Update ()
     {
-        if (!agent.pathPending && agent.remainingDistance < 0.5f)
+        if (!agent.pathPending && agent.remainingDistance < 0.5f && !chasing)
         {
             GoToNextPoint();
         }
 
-        Debug.Log("Chasing");
-
         float distance = Vector3.Distance(target.position, transform.position);
+
+        // if (distance >= lookRadius)
+        // {
+        //     chasing = false;
+        // }
 
         if (distance <= lookRadius)
         {
+            Debug.Log("Shkoinky");
             chasing = true;
         }
 

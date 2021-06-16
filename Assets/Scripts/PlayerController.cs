@@ -132,13 +132,6 @@ public class PlayerController : MonoBehaviour
             
             lastTapTimeD = Time.time;
         }
-
-        // RaycastHit hit;
-        // if (Physics.Raycast(transform.position, transform.forward, out hit, 2))
-        // {
-        //     Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.forward) * hit.distance, Color.blue);
-        //     Debug.Log(hit.collider.gameObject);
-        // }
     }
     
     void LateUpdate()
@@ -168,7 +161,6 @@ public class PlayerController : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log(other.gameObject.tag);
         if (other.gameObject.tag == "Enemy")
         {
             caughtAnimation.Play();
@@ -184,6 +176,7 @@ public class PlayerController : MonoBehaviour
         else if (other.gameObject.tag == "Enemy Vision")
         {
             other.gameObject.transform.parent.gameObject.GetComponent<GuardController>().chasing = true;
+            Debug.Log(other.gameObject.transform.parent.gameObject.GetComponent<GuardController>().chasing);
         }
     }
 
